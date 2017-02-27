@@ -2,6 +2,32 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+void MainWindow::initParams()
+{
+    hours = 0;
+    minutes = 0;
+    ratioTimeWeight = 0;
+    mode = MICRO_WAVE;
+    resetParams();
+}
+
+void MainWindow::resetParams()
+{
+    power = 100;
+    duration = 60;
+}
+
+void MainWindow::changeMode()
+{
+    switch(mode)
+    {
+    case MICRO_WAVE: mode = GRILL; break;
+    case GRILL: mode = BOTH; break;
+    case BOTH: mode = MICRO_WAVE; break;
+    default: mode = MICRO_WAVE;
+    }
+}
+
 void MainWindow::initStateMachine(QStateMachine * stateM)
 {
     QState * stopGroup = new QState();
@@ -30,6 +56,7 @@ void MainWindow::initStateMachine(QStateMachine * stateM)
     stateM->addState(stopGroup);
     stopGroup->setInitialState(init);
     stateM->setInitialState(stopGroup);
+#ifdef DEBUG
     connect(init,       SIGNAL(entered()), this, SLOT(initEnter()));
     connect(clockSet1,  SIGNAL(entered()), this, SLOT(clockSet1Enter()));
     connect(clockSet2,  SIGNAL(entered()), this, SLOT(clockSet2Enter()));
@@ -38,13 +65,20 @@ void MainWindow::initStateMachine(QStateMachine * stateM)
     connect(timeSet,    SIGNAL(entered()), this, SLOT(timeSetEnter()));
     connect(defrost,    SIGNAL(entered()), this, SLOT(defrostEnter()));
     connect(cooking,    SIGNAL(entered()), this, SLOT(cookingEnter()));
+#endif
+    connect(clockSet1,  SIGNAL(exited()), this, SLOT(clockSet1Exit()));
+    connect(clockSet2,  SIGNAL(exited()), this, SLOT(clockSet2Exit()));
+    connect(powerSet,   SIGNAL(exited()), this, SLOT(powerSetExit()));
+    connect(modeSet,    SIGNAL(exited()), this, SLOT(modeSetExit()));
+    connect(timeSet,    SIGNAL(exited()), this, SLOT(timeSetExit()));
+    connect(defrost,    SIGNAL(exited()), this, SLOT(defrostExit()));
 }
-
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    initParams();
     ui->setupUi(this);
     QStateMachine * stateM = new QStateMachine();
     initStateMachine(stateM);
@@ -56,9 +90,105 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_clockBtn_clicked(){qDebug() << "on_clockBtn_clicked";}
-void MainWindow::on_powerBtn_clicked(){qDebug() << "on_powerBtn_clicked";}
-void MainWindow::on_modeBtn_clicked(){qDebug() << "on_modeBtn_clicked";}
-void MainWindow::on_defrostBtn_clicked(){qDebug() << "on_defrostBtn_clicked";}
-void MainWindow::on_startBtn_clicked(){qDebug() << "on_startBtn_clicked";}
-void MainWindow::on_stopBtn_clicked(){qDebug() << "on_stopBtn_clicked";}
+void MainWindow::clockSet1Exit()
+{
+    hours = ui->dial->value();
+#ifdef DEBUG
+    qDebug() << "hours: " << hours;
+#endif
+}
+
+void MainWindow::clockSet2Exit()
+{
+    minutes = ui->dial->value();
+#ifdef DEBUG
+    qDebug() << "minutes: " << minutes;
+#endif
+}
+
+void MainWindow::powerSetExit()
+{
+    power = ui->dial->value();
+#ifdef DEBUG
+    qDebug() << "power: " << power;
+#endif
+}
+
+void MainWindow::modeSetExit()
+{
+    changeMode();
+}
+
+void MainWindow::timeSetExit()
+{
+    duration = ui->dial->value();
+#ifdef DEBUG
+    qDebug() << "duration: " << duration;
+#endif
+}
+
+void MainWindow::defrostExit()
+{
+    duration = ratioTimeWeight * ui->dial->value();
+#ifdef DEBUG
+    qDebug() << "duration: " << duration;
+#endif
+}
+
+void MainWindow::on_dial_valueChanged(int value)
+{
+    ui->lineEdit->setText(QString::number(value));
+}
+
+void MainWindow::initEnter()
+{
+    ui->lineEdit->setText(QString::number(hours) + ":" + QString::number(minutes));
+#ifdef DEBUG
+    qDebug() << "initEnter";
+#endif
+}
+
+void MainWindow::clockSet1Enter()
+{
+    ui->dial->setRange(0, 24);
+    ui->lineEdit->setText(QString::number(value));
+#ifdef DEBUG
+    qDebug() << "clockSet1Enter";
+#endif
+}
+
+void MainWindow::clockSet2Enter()
+{
+    ui->dial->setRange(0, 60);
+    ui->lineEdit->setText(QString::number(value));
+#ifdef DEBUG
+    qDebug() << "clockSet2Enter";
+#endif
+}
+
+void MainWindow::powerSetEnter()
+{
+    ui->dial->setRange(0, 100);
+    ui->lineEdit->setText(QString::number(value));
+#ifdef DEBUG
+    qDebug() << "powerSetEnter";
+#endif
+}
+
+void MainWindow::timeSetEnter()
+{
+    ui->dial->setRange(0, 360);
+    ui->lineEdit->setText(QString::number(value));
+#ifdef DEBUG
+    qDebug() << "timeSetEnter";
+#endif
+}
+
+void MainWindow::defrostEnter()
+{
+    ui->dial->setRange(0, 100);
+    ui->lineEdit->setText(QString::number(value));
+#ifdef DEBUG
+    qDebug() << "defrostEnter";
+#endif
+}
