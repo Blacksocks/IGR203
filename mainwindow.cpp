@@ -150,8 +150,10 @@ void MainWindow::initEnter()
 
 void MainWindow::clockSet1Enter()
 {
+    int newVal = 24 * ui->dial->value() / ui->dial->maximum();
     ui->dial->setRange(0, 24);
-    ui->lineEdit->setText(QString::number(value));
+    ui->dial->setValue(newVal);
+    ui->lineEdit->setText(QString::number(ui->dial->value()));
 #ifdef DEBUG
     qDebug() << "clockSet1Enter";
 #endif
@@ -159,8 +161,10 @@ void MainWindow::clockSet1Enter()
 
 void MainWindow::clockSet2Enter()
 {
+    int newVal = 60 * ui->dial->value() / ui->dial->maximum();
     ui->dial->setRange(0, 60);
-    ui->lineEdit->setText(QString::number(value));
+    ui->dial->setValue(newVal);
+    ui->lineEdit->setText(QString::number(ui->dial->value()));
 #ifdef DEBUG
     qDebug() << "clockSet2Enter";
 #endif
@@ -168,8 +172,10 @@ void MainWindow::clockSet2Enter()
 
 void MainWindow::powerSetEnter()
 {
+    int newVal = 100 * ui->dial->value() / ui->dial->maximum();
     ui->dial->setRange(0, 100);
-    ui->lineEdit->setText(QString::number(value));
+    ui->dial->setValue(newVal);
+    ui->lineEdit->setText(QString::number(ui->dial->value()));
 #ifdef DEBUG
     qDebug() << "powerSetEnter";
 #endif
@@ -177,8 +183,10 @@ void MainWindow::powerSetEnter()
 
 void MainWindow::timeSetEnter()
 {
+    int newVal = 360 * ui->dial->value() / ui->dial->maximum();
     ui->dial->setRange(0, 360);
-    ui->lineEdit->setText(QString::number(value));
+    ui->dial->setValue(newVal);
+    ui->lineEdit->setText(QString::number(ui->dial->value()));
 #ifdef DEBUG
     qDebug() << "timeSetEnter";
 #endif
@@ -186,8 +194,10 @@ void MainWindow::timeSetEnter()
 
 void MainWindow::defrostEnter()
 {
+    int newVal = 100 * ui->dial->value() / ui->dial->maximum();
     ui->dial->setRange(0, 100);
-    ui->lineEdit->setText(QString::number(value));
+    ui->dial->setValue(newVal);
+    ui->lineEdit->setText(QString::number(ratioTimeWeight * ui->dial->value()));
 #ifdef DEBUG
     qDebug() << "defrostEnter";
 #endif
